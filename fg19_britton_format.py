@@ -38,7 +38,7 @@ def read_UVB_data_FG(input_file):
     redshift = np.array(redshift)
     energy = np.array(energy)
     jnu = np.log10(jnu)
-    #jnu -= 21.0 # convert from 10^-21 erg s^-1 cm^-2 Hz^-1 sr^-1
+    jnu -= 21.0 # convert from 10^-21 erg s^-1 cm^-2 Hz^-1 sr^-1
 
     jnu = np.transpose(np.array(jnu))
 
@@ -116,7 +116,7 @@ def write_spectra(redshift, energy, ljnu,
 if __name__ == '__main__':
 
     my_dlx = 0.05
-    fg19_file = '/home/sapple/c17.01/data/hm12_galaxy_errors.ascii'
+    fg19_file = '/home/sapple/fg19_mar20_2019-rip4nq/fg19_fiducial_spec_nu.dat'
     save_dir = '/home/sapple/cloudy_analysis/FG19_UVB/'
 
     redshift_fg, energy_fg, ljnu_fg = read_UVB_data_FG(fg19_file)
