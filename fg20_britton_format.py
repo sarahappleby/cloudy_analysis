@@ -1,4 +1,5 @@
-# Adapted from a script by Britton Smith for use with the latest FG19 file format.
+# Adapted from a script by Britton Smith for use with the latest FG20 file format.
+# Puts the FG20 data into the format required for Britton's Cloudy tools.
 
 import numpy as np
 import h5py
@@ -21,12 +22,26 @@ def read_UVB_data_FG(input_file):
     jnu = []
 
     lines = open(input_file, 'r').readlines()
-    for line in lines:
-        if line.startswith('#'):
-            continue
-        if len(line) < 100.:
-            intro_lines.append(line)
-        elif (len(line) > 100) & (len(line) < 1000):
+    
+    # previously, for the cloudy format file, we had commented intro lines. We don't use this now for the
+    # normal redshift + energy, spectrum files.
+
+    #for line in lines:
+    #    if line.startswith('#'):
+    #        continue
+    #    if len(line) < 100.:
+    #        intro_lines.append(line)
+    #    elif (len(line) > 100) & (len(line) < 1000):
+    #        redshift = [float(i) for i in line.split()]
+    #    else:
+    #        my_energy = line.split()[0]
+    #        energy.append(float(my_energy))
+    #
+    #        my_jnu = line[len(my_energy) + 3:]
+    #        jnu.append([float(i) for i in my_jnu.split()])
+
+    for i, line in enumerate(lines):
+        if i == 0:
             redshift = [float(i) for i in line.split()]
         else:
             my_energy = line.split()[0]
@@ -116,13 +131,13 @@ def write_spectra(redshift, energy, ljnu,
 if __name__ == '__main__':
 
     my_dlx = 0.05
-    fg19_file = '/home/sapple/fg19_mar20_2019-rip4nq/fg19_fiducial_spec_nu.dat'
-    save_dir = '/home/sapple/cloudy_analysis/FG19_UVB/'
+    fg19_file = '/home/sapple/fg20_031220/fg20_spec_nu.dat'
+    save_dir = '/home/sapple/cloudy_analysis/FG20_UVB/'
 
     redshift_fg, energy_fg, ljnu_fg = read_UVB_data_FG(fg19_file)
     my_lx = np.arange(np.log10(redshift_fg[0]+1),
                       np.log10(redshift_fg[-1]+1), my_dlx)
     my_redshift = np.power(10, my_lx) - 1
     write_spectra(redshift_fg, energy_fg, ljnu_fg,
-                  my_redshift, "FG19_UVB", reverse=False)
+                  my_redshift, "FG20_UVB", reverse=False)
 
