@@ -12,3 +12,7 @@ The directory also contains fg20_cloudy.ascii, which is in a format such that yo
 	cd main_directory
 	cloudy_cooling_tools/CIAOLoop fg_britton/ib_fg2020_hr.par -np 16
 
+5) Run Britton's tool for collating the results into h5 format:
+	python hdf5_ion_balance_tools/convert.py <runfile> <output_file> <elements>
+
+Where the runfile is ion_balance_tables/ion_fraction_FG20/ion_fraction_FG20.run
