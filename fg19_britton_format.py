@@ -80,12 +80,12 @@ def write_spectrum_table(output_file, redshift, energy, ljnu,
     out_file.write("# Faucher-Giguere 2019 \n")
     out_file.write("# z = %f\n" % redshift)
     out_file.write("# E [Ryd] log (J_nu)\n")
-    out_file.write("interpolate (%.10f %.10f)\n" % \
+    out_file.write("interpolate (%.16f %.16f)\n" % \
                    (e_min, np.log10(tiny_number)))
     for i, e in enumerate(my_energy):
         if my_energy[i] == my_energy[i-1]:
             e *= 1.0001
-        out_file.write("continue (%.10f %.10f)\n" % (e, my_ljnu[i]))
+        out_file.write("continue (%.16f %.16f)\n" % (e, my_ljnu[i]))
 
     my_e = 1.0
     e_value = np.log10(my_e)
@@ -95,7 +95,7 @@ def write_spectrum_table(output_file, redshift, energy, ljnu,
       (my_energy[index] - my_energy[index - 1])
     my_j = slope * (e_value - my_energy[index]) + my_ljnu[index]
     my_j += np.log10(4 * np.pi)
-    out_file.write("f(nu) = %.10f at %.10f Ryd\n" % \
+    out_file.write("f(nu) = %.16f at %.16f Ryd\n" % \
                    (my_j, my_e))
     out_file.close()
 
