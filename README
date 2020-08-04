@@ -1,0 +1,13 @@
+1) First, look at the FG20 download. The README describes the various data formats that are included. 
+The one we want is *_spec_nu.dat, which is the full UVB spectrum J in units of 10^-21 ergs/s/cm^2/Hz/sr, 
+as a function of frequency in units of Ry.
+The directory also contains fg20_cloudy.ascii, which is in a format such that you can replace the hm12 file in Cloudy.
+
+2) Britton's CIAOLoop Cloudy tools use the UVB as a series of spectrum files, one file per redshift. To get the FG20 data in this format, run the fg19_britton_format.py. This will populate a FG20_UVB directory with z_*.out files.
+
+3) Look at fg_britton. This contains ib_fg2020_hr.par, which is the parameter file for Britton's CIAOLoop tools. Check that this file points to the FG20_UVB directory, that all paths are correct in general, and that the redshifts are correct.
+
+4) To run CIAOLoop:
+	cd main_directory
+	cloudy_cooling_tools/CIAOLoop fg_britton/ib_fg2020_hr.par -np 16
+
