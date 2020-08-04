@@ -1,6 +1,7 @@
 1) First, look at the FG20 download. The README describes the various data formats that are included. 
 The one we want is *_spec_nu.dat, which is the full UVB spectrum J in units of 10^-21 ergs/s/cm^2/Hz/sr, 
 as a function of frequency in units of Ry.
+The first line is the redshifts from 0 - 10; subsequent lines have the frequency as the first entry, and then the value of the spectrum at each redshift
 The directory also contains fg20_cloudy.ascii, which is in a format such that you can replace the hm12 file in Cloudy.
 
 2) Britton's CIAOLoop Cloudy tools use the UVB as a series of spectrum files, one file per redshift. To get the FG20 data in this format, run the fg19_britton_format.py. This will populate a FG20_UVB directory with z_*.out files.
