@@ -2,9 +2,9 @@ import glob
 
 outfile = '/home/sapple/cloudy_analysis/missed_runs.dat'
 
-files = sorted(glob.glob('/home/sapple/cloudy_analysis/ion_balance_tables/ion_fraction_FG19/*'))
+files = sorted(glob.glob('/home/sapple/cloudy_analysis/ion_balance_tables/ion_fraction_FG20/*'))
 
-prefix = '/home/sapple/cloudy_analysis/ion_balance_tables/ion_fraction_FG19/ion_fraction_FG19_run'
+prefix = '/home/sapple/cloudy_analysis/ion_balance_tables/ion_fraction_FG20/ion_fraction_FG20_run'
 
 missed_runs = []
 
@@ -20,8 +20,9 @@ for f in files:
 
 unique = set(missed_runs)
 new_values = []
-if not 'cloudyIn.temp' in value:
-    new_values.append(value)
+for value in unique:
+    if not 'cloudyIn.temp' in value:
+        new_values.append(value)
 new_values = sorted(new_values)
 
 with open(outfile, 'w') as o:

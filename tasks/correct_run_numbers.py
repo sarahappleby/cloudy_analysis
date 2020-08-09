@@ -2,6 +2,7 @@ import h5py
 import numpy as np
 import glob
 import os
+from shutil import copyfile
 
 runParams = {}
 runParams['densities'] = np.array([-9.   , -8.875, -8.75 , -8.625, -8.5  , -8.375, -8.25 , -8.125,
@@ -19,19 +20,21 @@ runParams['densities'] = np.array([-9.   , -8.875, -8.75 , -8.625, -8.5  , -8.37
                                 3.   ,  3.125,  3.25 ,  3.375,  3.5  ,  3.625,  3.75 ,  3.875,
                                 4.])
 
-runParams['redshifts'] = np.array([0.     ,  0.12202,  0.25893,  0.41254,  0.58489,  0.77828,
+runParams['new_redshifts'] = np.array([0.     ,  0.12202,  0.25893,  0.41254,  0.58489,  0.77828,
                                 0.99526,  1.2387 ,  1.5119 ,  1.8184 ,  2.1623 ,  2.5481 ,
                                 2.9811 ,  3.4668 ,  4.0119 ,  4.6234 ,  5.3096 ,  6.0795 ,
                                 6.9433 ,  7.9125 ,  9. ])
+
+runParams['old_redshifts'] = np.array([0.     ,  0.12202,  0.25893,  0.41254,  0.58489,  0.77828,
+                                0.99526,  1.2387 ,  1.5119 ,  1.8184 ,  2.1623 ,  2.5481 ,
+                                2.9811 ,  3.4668 ,  4.0119 ,  4.6234 ,  5.3096 ,  6.0795 ,
+                                6.9433 ,  7.9125 ,  9. , 10.22])
 
 # For each file in original directory:
 #   Read header, get density and redshift
 #   Find number of this density and redshift by refering to list of possibilities
 #   Write file to new file with correct name in a new directory
 
-def read_header():
-    # method to read header and get the density and redshift
-    pass
 
 def get_old_run_number(run_dir, filename):
     basic_file = 'ion_fraction_FG19_run'
@@ -42,24 +45,59 @@ def get_old_run_number(run_dir, filename):
     else:
         return file_spec.split('_')[0]
 
-def get_correct_run_number():
-    # method to lookup true number of the density and redshift combo
-    pass
+def get_hdens_and_z(runNo):
+    nhdens = len(runParams['densities'])
+    nredshift = len(runParams['old_redshifts'])
 
-def write_to_file():
-    # method to write new file
-    pass
+    hdens_no = int((runNo -1)/ nredshift)
+    z_no = (runNo - 1) - (hdens_no * nredshift)
+    return runParams['densities'][hdens_no], runParams['old_redshifts'][z_no]
+
+def get_correct_run_number(hdens, z):
+    # method to lookup true number of the density and redshift combo
+    nhdens = len(runParams['densities'])
+    nredshift = len(runParams['new_redshifts'])
+    
+    hdens_index = np.where(runParams['densities'] == hdens)[0] 
+    z_index = np.where(runParams['new_redshifts'] == z)[0]
+
+    correct_number = nredshift * hdens_index + z_index + 1.
+
+    return int(correct_number)
+
+def get_missing_runs():
+    missing_runs_file = '/home/sapple/cloudy_analysis/ion_balance_tables/FG20_ion_fractions_missed_runs.dat'
+    f = open(missing_runs_file, 'r')
+    lines = f.readlines()
+    f.close()
+    return sorted([int(l) for l in lines])
 
 if __name__ == '__main__':
 
-    run_dir = '/home/sapple/cloudy_analysis/ion_balance_tables/ion_fraction_FG19_missing_z/'
-    out_dir = '/home/sapple/cloudy_analysis/ion_balance_tables/ion_fraction_FG19/'
+    run_dir = '/home/sapple/cloudy_analysis/ion_balance_tables/ion_fraction_FG20_missing_runs/'
+    out_dir = '/home/sapple/cloudy_analysis/ion_balance_tables/ion_fraction_FG20/'
+    basic_file = 'ion_fraction_FG20_run'
 
-    basic_file = 'ion_fraction_FG19_run'
+    original_runs = 2310
+    elements = ['Al', 'Ar', 'B', 'Be', 'Ca', 'C', 'Cl', 'Co', 'Cr', 'Cu', 'F', 'Fe', 'H', 'He', 
+                'K', 'Li', 'Mg', 'Mn', 'Na', 'Ne', 'Ni', 'O', 'P', 'Sc', 'S', 'Si', 'Ti', 'V']
 
-    all_files = sorted(glob.glob(run_dir+'*'))
+    missing_runs = get_missing_runs()
 
-    for f in all_files:
-        runNo = get_old_run_number(run_dir, f)
-        
+    run_strings = []
+    for r in range(1, original_runs+1):
+        if r in missing_runs:
+            continue
+        else:
+            hdens, z = get_hdens_and_z(r)
+            new_r = get_correct_run_number(hdens, z) 
+           
+            run_strings.append(str(new_r) + '\t' + str(hdens) + '\t' + '{:.4e}'.format(z) + '\n')
 
+            for e in elements:
+                old_file_name = basic_file + str(r) + '_'+ e +'.dat'
+                new_file_name = basic_file + str(new_r) + '_'+ e +'.dat'
+                copyfile(run_dir+old_file_name, out_dir+new_file_name)
+
+    with open(out_dir+'ion_fraction_FG20.run', 'w') as f:
+        f.writelines(run_strings)
