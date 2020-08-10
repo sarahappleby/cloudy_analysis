@@ -21,6 +21,9 @@ species = {'H': [1], 'He': [1, 2], 'C': [2, 3, 4, 5, 6], 'N': [4, 5, 6],
             'O': [1, 2, 3, 4, 5, 6, 7, 8, ], 'Ne': [4, 8, 9], 'Mg': [2, 10], 
             'Al': [2, 3], 'Si':[2, 3, 4, 12], 'Fe': [2]}
 
+header = '#Hdens  Temp    HydrogenI HeliumI   HeliumII  CarbonII  CarbonIII CarbonIV  CarbonV   NitrogeIV NitrogenV NitrogeVI OxygenI   OxygenII  OxygenIII OxygenIV  OxygenV   OxygenVI  OxygenVII OxygeVIII NeonIV NeonVIII  MagnesiII MagnesiuX AluminuII AluminIII SiliconII SilicoIII SiliconIV SilicoXII CarbonVI  NeonIX    IronII    redshift= '
+
+
 ion_table_file = '/home/sapple/ion_tables/FG20_ion_fractions.h5'
 f = h5py.File(ion_table_file, 'r')
 
@@ -56,6 +59,7 @@ with h5py.File(ion_table_file, 'r') as itf:
         ion_fractions = np.transpose(ion_fractions)
 
         lines = make_lines_from_array(ion_fractions)
+        lines.insert(0, header+"{:.5f}".format(redshift))
 
         with open(new_table_file, 'w') as ntf:
             writelines(lines)
