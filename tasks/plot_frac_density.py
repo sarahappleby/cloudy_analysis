@@ -16,6 +16,49 @@ def num2roman(num):
 
 if __name__ == '__main__':
 
+    background = 'fg20'
+    temp = 4.
+    hdens_min = -4.
+    hdens_max = -1.
+    redshift = 0.
+
+    # plot from the oppenheimer tables:
+    species = ['H1215', 'CIV1548', 'OVI1031', 'MgII2796', 'SiIII1206']
+    if background == 'fg20':
+        ion_table_file = '/home/sapple/ion_tables/FG20_oppenheimer_style/lt00000f100_i31'
+        species_id = [2, 7, 18, 24, 29]
+    elif background == 'hm12':
+        ion_table_file = '/home/rad/pygad/iontbls/tbls-i31/lt00000f100_i31'
+        species_id = [2, 7, 17, 22, 27]
+    #read in the text file, get the ion we want, select a temperature
+    
+    tbl = np.loadtxt(ion_table_file)
+
+    hdens = np.unique(tbl[:, 0])
+    temps = np.unique(tbl[:, 1])
+
+    temps_i = np.argmin(np.abs(temps - temp))
+    hdens_min_i = np.argmin(np.abs(hdens - hdens_min))
+    hdens_max_i = np.argmin(np.abs(hdens - hdens_max))
+
+    indices = [(i*len(temps)) + temps_i for i in range(len(hdens))]
+
+    hdens_plot = hdens[hdens_min_i:hdens_max_i + 1]
+
+    for i, num in enumerate(species_id):
+
+        frac_plot = tbl[:, num][indices][hdens_min_i:hdens_max_i + 1]
+        plt.plot(hdens_plot, frac_plot, label=species[i])
+
+    plt.legend()
+    plt.xlabel('log (nH)')
+    plt.ylabel('log (ion fraction)')
+    plt.savefig('./plots/'+background+'_hdens_ion_fracs.png')
+    plt.clf()
+ 
+
+    # plot from the h5 file:
+    """
     temp = 4.
     hdens_min = -4.
     hdens_max = -1.
@@ -25,7 +68,6 @@ if __name__ == '__main__':
     elements = species.keys()
 
     ion_table_file = '/home/sapple/ion_tables/FG20_ion_fractions.h5'
-
     with h5py.File(ion_table_file, 'r') as itf:
     
         redshifts = itf['redshifts'][:]
@@ -52,6 +94,6 @@ if __name__ == '__main__':
         plt.ylabel('log (ion fraction)')
         plt.savefig('./plots/hdens_ion_fracs.png')
         plt.clf()
-        
+        """ 
 
 
