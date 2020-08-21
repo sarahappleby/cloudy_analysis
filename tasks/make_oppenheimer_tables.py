@@ -25,7 +25,6 @@ header = '#Hdens  Temp    HydrogenI HeliumI   HeliumII  CarbonII  CarbonIII Carb
 
 
 ion_table_file = '/home/sapple/ion_tables/FG20_ion_fractions.h5'
-f = h5py.File(ion_table_file, 'r')
 
 elements = species.keys()
 Nspecies = sum(len(species[e]) for e in elements)
@@ -54,7 +53,7 @@ with h5py.File(ion_table_file, 'r') as itf:
             for ion in species[e]:
                 # for each hydrogen density, get the fractions for every temperature
                 ion_fractions[j] = itf[e][:][ion - 1][:, i].flatten()
-            j += 1
+                j += 1
 
         ion_fractions = np.transpose(ion_fractions)
 
@@ -62,6 +61,6 @@ with h5py.File(ion_table_file, 'r') as itf:
         lines.insert(0, header+"{:.5f}".format(redshift))
 
         with open(new_table_file, 'w') as ntf:
-            writelines(lines)
+            ntf.writelines(lines)
 
         del lines, ion_fractions

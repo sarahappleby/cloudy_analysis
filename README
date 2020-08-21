@@ -18,3 +18,5 @@ The directory also contains fg20_cloudy.ascii, which is in a format such that yo
 5b) If this fails with missing runs, use tasks/get_missed_runs.py to identify which runs failed. Previously, this has been redshifts that aren't included in the FG20 dataset. In this case, we can rename the files with the run numbers they would have had without this redshift. For this, use tasks/correct_run_numbers.py
 
 Where the runfile is ion_balance_tables/ion_fraction_FG20/ion_fraction_FG20.run
+
+6) Make Oppenheimer style tables using tasks/make_oppenheimer_tables.py
