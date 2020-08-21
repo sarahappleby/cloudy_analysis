@@ -1,4 +1,6 @@
 import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
+from matplotlib import cm
 import numpy as np
 import h5py
 
@@ -14,46 +16,65 @@ def num2roman(num):
                 num -= i
     return roman
 
+plt.rc('text', usetex=True)
+plt.rc('font', family='serif', size=14)
+
 if __name__ == '__main__':
 
-    background = 'fg20'
+    backgrounds = ['fg20', 'hm12']
     temp = 4.
     hdens_min = -4.
     hdens_max = -1.
     redshift = 0.
+    linestyles = ['-', '--']
+    uvb_labels = [r'$\textrm{FG20}$', r'$\textrm{HM12}$']
 
-    # plot from the oppenheimer tables:
-    species = ['H1215', 'CIV1548', 'OVI1031', 'MgII2796', 'SiIII1206']
-    if background == 'fg20':
-        ion_table_file = '/home/sapple/ion_tables/FG20_oppenheimer_style/lt00000f100_i31'
-        species_id = [2, 7, 18, 24, 29]
-    elif background == 'hm12':
-        ion_table_file = '/home/rad/pygad/iontbls/tbls-i31/lt00000f100_i31'
-        species_id = [2, 7, 17, 22, 27]
-    #read in the text file, get the ion we want, select a temperature
+    species = ['HI', 'MgII', 'SiIII', 'CIV', 'OVI']
+    cmap = cm.get_cmap('viridis')
+    dc = 1. / len(species)
+    colors = [cmap((i+0.5) * dc) for i in range(len(species))]
+
+    fig, ax = plt.subplots(1, 1, figsize=(6, 6))
+
+    line_fg = Line2D([0,1],[0,1],ls=linestyles[0], marker=None, color='grey')
+    line_hm = Line2D([0,1],[0,1],ls=linestyles[1], marker=None, color='grey')
+
+    leg_uvb = ax.legend([line_fg, line_hm],uvb_labels, loc=3, fontsize=12)
+    ax.add_artist(leg_uvb)
+
+    for b, background in enumerate(backgrounds):
+        if background == 'fg20':
+            ion_table_file = '/home/sapple/ion_tables/FG20_oppenheimer_style/lt00000f100_i31'
+            species_id = [2, 24, 29, 7, 18]
+        elif background == 'hm12':
+            ion_table_file = '/home/rad/pygad/iontbls/tbls-i31/lt00000f100_i31'
+            species_id = [2, 22, 27, 7, 17]
+
+        tbl = np.loadtxt(ion_table_file)
+
+        hdens = np.unique(tbl[:, 0])
+        temps = np.unique(tbl[:, 1])
+
+        temps_i = np.argmin(np.abs(temps - temp))
+        hdens_min_i = np.argmin(np.abs(hdens - hdens_min))
+        hdens_max_i = np.argmin(np.abs(hdens - hdens_max))
+
+        indices = [(i*len(temps)) + temps_i for i in range(len(hdens))]
+
+        hdens_plot = hdens[hdens_min_i:hdens_max_i + 1]
+
+        for i, num in enumerate(species_id):
     
-    tbl = np.loadtxt(ion_table_file)
-
-    hdens = np.unique(tbl[:, 0])
-    temps = np.unique(tbl[:, 1])
-
-    temps_i = np.argmin(np.abs(temps - temp))
-    hdens_min_i = np.argmin(np.abs(hdens - hdens_min))
-    hdens_max_i = np.argmin(np.abs(hdens - hdens_max))
-
-    indices = [(i*len(temps)) + temps_i for i in range(len(hdens))]
-
-    hdens_plot = hdens[hdens_min_i:hdens_max_i + 1]
-
-    for i, num in enumerate(species_id):
-
-        frac_plot = tbl[:, num][indices][hdens_min_i:hdens_max_i + 1]
-        plt.plot(hdens_plot, frac_plot, label=species[i])
-
-    plt.legend()
-    plt.xlabel('log (nH)')
-    plt.ylabel('log (ion fraction)')
-    plt.savefig('./plots/'+background+'_hdens_ion_fracs.png')
+            frac_plot = tbl[:, num][indices][hdens_min_i:hdens_max_i + 1]
+            plt.plot(hdens_plot, frac_plot, ls=linestyles[b], c=colors[i], label=species[i])
+        if b == 0:
+            plt.legend(fontsize=12)
+            ax.set_xlabel(r'${\rm log (nH)}$')
+            ax.set_ylabel(r'${\rm log }(f_{\rm ion})$')
+            ax.set_xlim(hdens_min, hdens_max)
+            ax.set_ylim(-6, 0.5)
+    
+    plt.savefig('./plots/hdens_ion_fracs.png')
     plt.clf()
  
 
