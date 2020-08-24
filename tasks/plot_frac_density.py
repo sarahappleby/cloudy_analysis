@@ -45,10 +45,10 @@ if __name__ == '__main__':
     for b, background in enumerate(backgrounds):
         if background == 'fg20':
             ion_table_file = '/home/sapple/ion_tables/FG20_oppenheimer_style/lt00000f100_i31'
-            species_id = [2, 24, 29, 7, 18]
+            #species_id = [2, 24, 29, 7, 18]
         elif background == 'hm12':
             ion_table_file = '/home/rad/pygad/iontbls/tbls-i31/lt00000f100_i31'
-            species_id = [2, 22, 27, 7, 17]
+        species_id = [2, 22, 27, 7, 17]
 
         tbl = np.loadtxt(ion_table_file)
 
