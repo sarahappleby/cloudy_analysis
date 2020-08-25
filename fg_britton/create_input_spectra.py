@@ -10,9 +10,9 @@ speed_of_light_cgs = 2.99792458e10
 Ryd_to_erg = 13.60569253 * 1.60217646e-12
 
 def read_UVB_data_FG(input_directory, file_suffix=".dat"):
-    "Load Faucher-Giguere data."
+    print("Load Faucher-Giguere data.")
 
-    print "Loading Faucher-Giguere data from %s." % input_directory
+    print("Loading Faucher-Giguere data from %s." % input_directory)
     redshift = []
     energy = None
     jnu = []
@@ -34,7 +34,7 @@ def read_UVB_data_FG(input_directory, file_suffix=".dat"):
                 my_jnu.append(float(online[1]))
 
         if my_redshift is None:
-            print "Could not get redshift from input file: %s." % my_file
+            print("Could not get redshift from input file: %s." % my_file)
             return None
 
         redshift.append(my_redshift)
@@ -53,10 +53,11 @@ def read_UVB_data_FG(input_directory, file_suffix=".dat"):
     return (redshift, energy, jnu)
 
 def read_UVB_data_HM(input_file):
-    "Load Haardt & Madau data."
+    print("Load Haardt & Madau data.")
 
-    print "Loading Haardt & Madau data from %s." % input_file
-    lines = file(input_file).readlines()
+    print("Loading Haardt & Madau data from %s." % input_file)
+    with open(input_file) as f:
+        lines = f.readlines()
     first_line = True
     wavelength = []
     jnu = []
@@ -105,8 +106,8 @@ def write_spectrum_table(output_file, redshift, energy, ljnu,
                               my_ljnu,
                               l_tiny * np.ones(2)])
     
-    print "Writing spectrum for z = %f to %s." % (redshift, output_file)
-    out_file = file(output_file, 'w')
+    print("Writing spectrum for z = %f to %s." % (redshift, output_file))
+    out_file = open(output_file, 'w')
     out_file.write("# Haardt & Madau (2011)\n")
     out_file.write("# z = %f\n" % redshift)
     out_file.write("# E [Ryd] log (J_nu)\n")
@@ -147,27 +148,27 @@ def write_spectra(redshift, energy, ljnu,
 
 def print_redshift_list(redshift, my_format="%10.4e"):
     for z in redshift:
-        print my_format % z,
-    print ""
+        print(my_format % z,)
+    print("")
         
 if __name__ == '__main__':
     my_dlx = 0.05
 
-    redshift_hm, wavelength_hm, ljnu_hm = read_UVB_data_HM("UVB.out")
+    redshift_hm, wavelength_hm, ljnu_hm = read_UVB_data_HM("/home/sapple/hm12_uvb/UVB.out")
     energy_hm = angstrom_to_Ryd(wavelength_hm)
     my_lx = np.arange(np.log10(redshift_hm[0]+1), 
                       np.log10(redshift_hm[-1]+1), my_dlx)
     my_redshift = np.power(10, my_lx) - 1
     write_spectra(redshift_hm, energy_hm, ljnu_hm,
-                  my_redshift, "HM11_UVB", reverse=True)
+                  my_redshift, "/home/sapple/hm12_uvb/HM12_UVB", reverse=True)
 
     print_redshift_list(my_redshift)
     
-    redshift_fg, energy_fg, ljnu_fg = read_UVB_data_FG("fg_uvb_dec11")
-    my_lx = np.arange(np.log10(redshift_fg[0]+1), 
-                      np.log10(redshift_fg[-1]+1), my_dlx)
-    my_redshift = np.power(10, my_lx) - 1
-    write_spectra(redshift_fg, energy_fg, ljnu_fg,
-                  my_redshift, "FG11_UVB", reverse=False)
-
-    print_redshift_list(my_redshift)
+    #redshift_fg, energy_fg, ljnu_fg = read_UVB_data_FG("fg_uvb_dec11")
+    #my_lx = np.arange(np.log10(redshift_fg[0]+1), 
+    #                  np.log10(redshift_fg[-1]+1), my_dlx)
+    #my_redshift = np.power(10, my_lx) - 1
+    #write_spectra(redshift_fg, energy_fg, ljnu_fg,
+    #              my_redshift, "FG11_UVB", reverse=False)
+    #
+    #print_redshift_list(my_redshift)
