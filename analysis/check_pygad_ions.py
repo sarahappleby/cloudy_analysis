@@ -6,10 +6,10 @@ wind = 's50'
 snap = '151'
 survey = 'dwarfs'
 
-T_choose = 4.0
+T_choose = 6.0
 nh_choose = -6.0
-dt = 0.05
-dnh = 0.05
+dt = 0.1
+dnh = 0.1
 
 all_ions = ['HI', 'HeI', 'HeII', 'CII', 'CIII', 'CIV', 'CV', 'NIV', 'NV', 'NVI',
         'OI', 'OII', 'OIII', 'OIV', 'OV', 'OVI', 'OVII', 'OVIII', 'NeIV', 'NeVIII',
@@ -53,11 +53,11 @@ mask = temp_pg_mask * nh_pg_mask
 line_pg = ''
 for i in range(len(ions_el)):
 
-    ion_mass = s.gas.get(ions_el[i]).in_units_of('1e+10 Msol h_0**-1')
     if ions_el == 'H':
+        ion_mass = s.gas.get(ions_el[i]).in_units_of('1e+10 Msol h_0**-1')
         f_ion = pg.snapshot.derived.derive_rules.calc_HI_mass(s)[mask].in_units_of('1e+10 Msol h_0**-1') / ion_mass[mask]
     else:
-        f_ion = pg.snapshot.derived.derive_rules.calc_ion_mass(s, ions_el[i], ions_state[i])[mask].in_units_of('1e+10 Msol h_0**-1') / ion_mass[mask]
+        f_ion = pg.snapshot.derived.derive_rules.calc_ion_mass(s, ions_el[i], ions_state[i])[mask]
 
     f_ion = float(np.nanmedian(np.log10(f_ion)))
     line_pg += str(round(f_ion, 3)) + '\t'
