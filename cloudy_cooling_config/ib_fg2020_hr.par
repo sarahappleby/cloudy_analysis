@@ -6,7 +6,7 @@
 ##################### Run parameters ######################
 
 # path to Cloudy executable
-cloudyExe               = /home/sapple/c17.01/source/cloudy.exe
+cloudyExe               = /disk04/sapple/c17.02/source/cloudy.exe
 
 # don't save raw output from Cloudy
 saveCloudyOutputFiles   = 0
@@ -18,7 +18,7 @@ exitOnCrash             = 1
 outputFilePrefix        = ion_fraction_FG20
 
 # output directory
-outputDir               = /home/sapple/cloudy_analysis/ion_balance_tables/ion_fraction_FG20
+outputDir               = /disk04/sapple/cloudy_analysis/ion_balance_tables/ion_fraction_FG20
 
 # index of first run
 runStartIndex           = 1
@@ -66,5 +66,5 @@ command iterate to convergence
 
 loop [hden] (-9;4;0.125)
 
-loop [init "FG20_UVB/z_*.out"] 0.0000e+00 1.2202e-01 2.5893e-01 4.1254e-01 5.8489e-01 7.7828e-01 9.9526e-01 1.2387e+00 1.5119e+00 1.8184e+00 2.1623e+00 2.5481e+00 2.9811e+00 3.4668e+00 4.0119e+00 4.6234e+00 5.3096e+00 6.0795e+00 6.9433e+00 7.9125e+00 9.0000e+00
+loop [init "UVB_data/FG20_UVB/z_*.out"] 0.0000e+00 1.2202e-01 2.5893e-01 4.1254e-01 5.8489e-01 7.7828e-01 9.9526e-01 1.2387e+00 1.5119e+00 1.8184e+00 2.1623e+00 2.5481e+00 2.9811e+00 3.4668e+00 4.0119e+00 4.6234e+00 5.3096e+00 6.0795e+00 6.9433e+00 7.9125e+00 9.0000e+00
 

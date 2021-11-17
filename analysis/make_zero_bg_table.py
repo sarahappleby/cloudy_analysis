@@ -17,7 +17,9 @@ if __name__ == '__main__':
         line_parts = line.split()
         if line_parts[0] == 'f(nu)':continue
 
-        line_parts[-1] = '0.0)'
+        spec = float(line_parts[-1][:-1])
+
+        line_parts[-1] = '{0:.16f}'.format(spec*1e-10) + ')'
         new_lines[l] = ' '.join(line_parts) + '\n'
 
     
