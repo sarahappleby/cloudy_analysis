@@ -1,20 +1,22 @@
+from functools import reduce
 import h5py
 import numpy as na
 import re
 import copy
 
+
 floatType = '>f4'
 intType = '>i4'
 
 def cloudyGrid_ascii2hdf5(runFile, outputFile, species):
-    "Convert Cloudy ion fraction ascii data into hdf5."
+    print("Convert Cloudy ion fraction ascii data into hdf5.")
 
-    print "Converting %s from %s to %s." % (species, runFile, outputFile)
+    print("Converting %s from %s to %s." % (species, runFile, outputFile))
 
     if runFile[-4:] == '.run':
         prefix = runFile[0:-4]
     else:
-        print "Run file needs to end in .run."
+        print("Run file needs to end in .run.")
         exit(1)
 
     f = open(runFile,'r')
@@ -53,10 +55,10 @@ def cloudyGrid_ascii2hdf5(runFile, outputFile, species):
                 getRunValues = True
 
     # Check file line number against product of parameter numbers.
-    gridDimension = [len(q) for q in parameterValues]
+    gridDimension = [len(list(q)) for q in parameterValues]
     if totalRuns != reduce((lambda x,y: x*y),gridDimension):
-        print "Error: total runs (%d) in run file not equal to product of parameters(%d)." % \
-        (totalRuns,reduce((lambda x,y: x*y),gridDimension))
+        print("Error: total runs (%d) in run file not equal to product of parameters(%d)." % \
+        (totalRuns,reduce((lambda x,y: x*y),gridDimension)))
         exit(1)
 
     # Read in data files.
@@ -80,12 +82,12 @@ def cloudyGrid_ascii2hdf5(runFile, outputFile, species):
     # Write loop parameter values.
     for q,values in enumerate(parameterValues):
         name = "Parameter%d" % (q+1)
-        output[species].attrs[name] = na.array(values, dtype=floatType)
+        output[species].attrs[name] = na.array(list(values), dtype=floatType)
 
     output.close()
 
 def loadMap(mapFile,gridDimension,indices,gridData):
-    "Read individual cooling map ascii file and fill data arrays."
+    print("Read individual cooling map ascii file and fill data arrays.")
 
     f = open(mapFile,'r')
     lines = f.readlines()
@@ -101,22 +103,22 @@ def loadMap(mapFile,gridDimension,indices,gridData):
             t.append(float(onLine.pop(0)))
             ion_fraction.append(map(float, onLine))
 
-    ion_fraction = na.array(ion_fraction)
+    ion_fraction = na.array([list(i) for i in ion_fraction])
 
     if len(gridData) == 0:
         myDims = copy.deepcopy(gridDimension)
         myDims.extend(ion_fraction.shape)
         gridData.append(na.array(t))
-        gridData.append(na.zeros(shape=myDims))
+        gridData.append(na.empty(shape=myDims))
 
     gridData[1][tuple(indices)][:] = ion_fraction
 
 def get_grid_indices(dims,index):
-    "Return indices with shape of dims corresponding to scalar index."
+    print("Return indices with shape of dims corresponding to scalar index.")
     indices = []
     dims.reverse()
     for dim in dims:
-        indices.append(index % dim)
+        indices.append(int(index % dim))
         index -= indices[-1]
         index /= dim
 

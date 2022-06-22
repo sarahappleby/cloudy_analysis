@@ -4,8 +4,6 @@ import numpy as np
 def format_redshift(z):
     z = "{:.3f}".format(z)
     dec = z.find('.')
-    if dec == 1:
-        z = '0' + z
     z = z.replace('.', '')
     return z
 
@@ -16,6 +14,9 @@ def make_lines_from_array(array):
         lines.append(('\t').join(line) + '\n')
     return lines
 
+ion_table_file = '/disk04/sapple/ion_tables/FG20_ion_fractions_new.h5'
+output_dir = '/disk04/sapple/ion_tables/FG20_oppenheimer_style_new/'
+
 header = '#Hdens  Temp    HydrogenI HeliumI   HeliumII  CarbonII  CarbonIII CarbonIV  CarbonV   NitrogeIV NitrogenV NitrogeVI OxygenI   OxygenII  OxygenIII OxygenIV  OxygenV   OxygenVI  OxygenVII OxygeVIII NeonIV    NeonVIII  MagnesiII MagnesiuX AluminuII AluminIII SiliconII SilicoIII SiliconIV SilicoXII CarbonVI  NeonIX    IronII    redshift= '
 
 elements = ['H', 'He', 'C', 'N', 'O', 'Ne', 'Mg', 'Al', 'Si', 'C', 'Ne', 'Fe']
@@ -25,7 +26,6 @@ species = [[1], [1, 2], [2, 3, 4, 5], [4, 5, 6],
 
 Nspecies = sum(len(species[i]) for i in range(len(species)))
 
-ion_table_file = '/home/sapple/ion_tables/HM12_ion_fractions.h5'
 with h5py.File(ion_table_file, 'r') as itf:
     redshifts = itf['redshifts'][:]
     
@@ -38,7 +38,7 @@ with h5py.File(ion_table_file, 'r') as itf:
     for i, redshift in enumerate(redshifts):
        
         redshift_string = format_redshift(redshift)
-        new_table_file = '/home/sapple/ion_tables/HM12_oppenheimer_style/lt'+redshift_string+'f100_i'+str(Nspecies)
+        new_table_file = f'{output_dir}lt{redshift_string}f100_i{Nspecies}'
 
 
         ion_fractions = np.zeros((Nspecies+2, len(temps_array)))
